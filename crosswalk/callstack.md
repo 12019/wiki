@@ -26,9 +26,8 @@
 #22 main (argc=2, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
 ```
 
-```
 ### EstablishGpuChannel
-
+```
 #0  content::BrowserGpuChannelHostFactory::EstablishGpuChannel(content::CauseForGpuLaunch, base::Callback<void ()> const&) (this=, cause_for_gpu_launch=cause_for_gpu_launch@entry=content::CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP, callback=...) at ../../content/browser/gpu/browser_gpu_channel_host_factory.cc:344
 #1  content::BrowserGpuChannelHostFactory::Initialize (establish_gpu_channel=<optimized out>) at ../../content/browser/gpu/browser_gpu_channel_host_factory.cc:233
 #2  content::BrowserMainLoop::BrowserThreadsStarted (this=)
