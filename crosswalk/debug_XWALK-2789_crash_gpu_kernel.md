@@ -14,3 +14,68 @@ alice@common_box:~$ ps ajxf | grep xwalk
  2284  2357  2284  2284 pts/3     2284 Sl+   5001   0:00                          \_ /home/abuild/rpmbuild/BUILD/crosswalk/src/out/Release/xwalk --type=xwalk-extension-process --channel=2284.2.1208256788
 alice@common_box:~$ 
 ```
+
+```c++
+(gdb) bt
+#0  ozonewayland::WaylandShell::WaylandShell (this=) at ../../ozone/wayland/shell/shell.cc:17
+#1  ozonewayland::WaylandDisplay::InitializeDisplay (this=this@entry=) at ../../ozone/wayland/display.cc:332
+#2  ozonewayland::WaylandDisplay::InitializeHardware (this=) at ../../ozone/wayland/display.cc:85
+#3  ui::(anonymous namespace)::OzonePlatformWayland::InitializeGPU (this=) at ../../ozone/platform/ozone_platform_wayland.cc:91
+#4  gfx::InitializeStaticGLBindings (implementation=gfx::kGLImplementationEGLGLES2) at ../../ui/gl/gl_implementation_ozone.cc:41
+#5  gfx::GLSurface::InitializeOneOffImplementation (impl=<optimized out>, fallback_to_osmesa=<optimized out>, gpu_service_logging=<optimized out>, disable_gl_drawing=<optimized out>) at ../../ui/gl/gl_surface.cc:
+78
+#6  gfx::GLSurface::InitializeOneOff () at ../../ui/gl/gl_surface.cc:69
+#7  content::GpuMain (parameters=...) at ../../content/gpu/gpu_main.cc:256
+#8  content::ContentMainRunnerImpl::Run (this=) at ../../content/app/content_main_runner.cc:773
+#9  content::ContentMain (params=...) at ../../content/app/content_main.cc:19
+#10 main (argc=12, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
+
+```
+
+It seems that the GPU Porcess crashes here
+```C++
+bool LinuxSandbox::InitializeSandboxImpl() { 
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess(); 
+  const std::string process_type = 
+      command_line->GetSwitchValueASCII(switches::kProcessType); 
+ 
+  // We need to make absolutely sure that our sandbox is "sealed" before 
+  // returning. 
+  // Unretained() since the current object is a Singleton. 
+  base::ScopedClosureRunner sandbox_sealer( 
+      base::Bind(&LinuxSandbox::SealSandbox, base::Unretained(this))); 
+  // Make sure that this function enables sandboxes as promised by GetStatus(). 
+  // Unretained() since the current object is a Singleton. 
+  base::ScopedClosureRunner sandbox_promise_keeper( 
+      base::Bind(&LinuxSandbox::CheckForBrokenPromises, 
+                 base::Unretained(this), 
+                 process_type)); 
+ 
+  // No matter what, it's always an error to call InitializeSandbox() after 
+  // threads have been created. 
+  if (!IsSingleThreaded()) { 
+    std::string error_message = "InitializeSandbox() called with multiple " 
+                                "threads in process " + process_type; 
+    // TSAN starts a helper thread, so we don't start the sandbox and don't 
+    // even report an error about it. 
+    if (IsRunningTSAN()) 
+      return false; 
+ 
+    // The GPU process is allowed to call InitializeSandbox() with threads. 
+    bool sandbox_failure_fatal = process_type != switches::kGpuProcess; 
+    // This can be disabled with the '--gpu-sandbox-failures-fatal' flag. 
+    // Setting the flag with no value or any value different than 'yes' or 'no' 
+    // is equal to setting '--gpu-sandbox-failures-fatal=yes'. 
+    if (process_type == switches::kGpuProcess && 
+        command_line->HasSwitch(switches::kGpuSandboxFailuresFatal)) { 
+      const std::string switch_value = 
+          command_line->GetSwitchValueASCII(switches::kGpuSandboxFailuresFatal); 
+      sandbox_failure_fatal = switch_value != "no"; 
+    }    
+ 
+    if (sandbox_failure_fatal) 
+      LOG(FATAL) << error_message;
+ 
+    LOG(ERROR) << error_message;
+    return false;
+```
