@@ -292,3 +292,37 @@ GpuProcessHost* GpuProcessHost::Get(GpuProcessKind kind,
   return NULL;
 }
 ```
+```C++
+ 
+bool GpuProcessHost::Init() {
+  init_start_time_ = base::TimeTicks::Now();
+ 
+  TRACE_EVENT_INSTANT0("gpu", "LaunchGpuProcess", TRACE_EVENT_SCOPE_THREAD);
+ 
+  std::string channel_id = process_->GetHost()->CreateChannel();
+  if (channel_id.empty())
+    return false;
+ 
+  if (in_process_) {
+    DCHECK(g_gpu_main_thread_factory);
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitch(switches::kDisableGpuWatchdog);
+ 
+    GpuDataManagerImpl* gpu_data_manager = GpuDataManagerImpl::GetInstance();
+    DCHECK(gpu_data_manager);
+    gpu_data_manager->AppendGpuCommandLine(command_line);
+ 
+    in_process_gpu_thread_.reset(g_gpu_main_thread_factory(channel_id));
+    in_process_gpu_thread_->Start();
+ 
+    OnProcessLaunched();  // Fake a callback that the process is ready.
+  } else if (!LaunchGpuProcess(channel_id)) {
+    return false;
+  }
+ 
+  if (!Send(new GpuMsg_Initialize()))
+    return false;
+ 
+  return true;
+}
+```
