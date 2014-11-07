@@ -41,3 +41,26 @@
 #10 main (argc=2, argv=)
 ```
 
+### Display::~Diplay
+Calling from the browser process
+```
+(gdb) bt
+#0  gfx::Display::~Display (this=, __in_chrg=<optimized out>) at ../../ui/gfx/display.cc:85
+#1  views::DesktopScreenWayland::SetGeometry (this=, geometry=...) at ../../ozone/ui/desktop_aura/desktop_screen_wayland.cc:38
+#2  views::DesktopScreenWayland::OnOutputSizeChanged (this=<optimized out>, width=<optimized out>, height=<optimized out>) at ../../ozone/ui/desktop_aura/desktop_screen_wayland.cc:149
+#3  ozonewayland::WaylandDisplay::LookAheadOutputGeometry (this=) at ../../ozone/wayland/display.cc:306
+#4  ui::(anonymous namespace)::OzonePlatformWayland::CreatePlatformWindow (this=<optimized out>, delegate=, bounds=...) at ../../ozone/platform/ozone_platform_wayland.cc:61
+#5  views::DesktopFactoryWayland::CreateDesktopScreen (this=) at ../../ozone/ui/desktop_aura/desktop_factory_wayland.cc:36
+#6  xwalk::NativeAppWindow::Initialize () at ../../xwalk/runtime/browser/ui/native_app_window_views.cc:311
+#7  xwalk::XWalkBrowserMainParts::PreMainMessageLoopRun (this=) at ../../xwalk/runtime/browser/xwalk_browser_main_parts.cc:210
+#8  content::BrowserMainLoop::PreMainMessageLoopRun (this=) at ../../content/browser/browser_main_loop.cc:736
+#9  Run (this=) at ../../base/callback.h:401
+#10 content::StartupTaskRunner::RunAllTasksNow (this=) at ../../content/browser/startup_task_runner.cc:45
+#11 content::BrowserMainLoop::CreateStartupTasks (this=) at ../../content/browser/browser_main_loop.cc:636
+#12 content::BrowserMainRunnerImpl::Initialize (this=, parameters=...) at ../../content/browser/browser_main_runner.cc:193
+#13 content::BrowserMain (parameters=...) at ../../content/browser/browser_main.cc:22
+#14 content::ContentMainRunnerImpl::Run (this=) at ../../content/app/content_main_runner.cc:773
+#15 content::ContentMain (params=...) at ../../content/app/content_main.cc:19
+#16 main (argc=3, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
+(gdb) 
+```
