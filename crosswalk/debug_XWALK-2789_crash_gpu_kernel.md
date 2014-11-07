@@ -109,3 +109,33 @@ bool LinuxSandbox::InitializeSandboxImpl() {
 #8  content::ContentMain (params=...) at ../../content/app/content_main.cc:19
 #9  main (argc=12, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
 ```
+
+### Here is the crash point
+// If a BPF policy is engaged for |process_type|, run a few sanity checks. 
+void RunSandboxSanityChecks(const std::string& process_type) { 
+  if (process_type == switches::kRendererProcess || 
+      process_type == switches::kGpuProcess || 
+      process_type == switches::kPpapiPluginProcess) { 
+    int syscall_ret; 
+    errno = 0; 
+ 
+    // Without the sandbox, this would EBADF. 
+    syscall_ret = fchmod(-1, 07777); 
+    CHECK_EQ(-1, syscall_ret);    
+    CHECK_EQ(EPERM, errno);   <== Here??
+ 
+    // Run most of the sanity checks only in DEBUG mode to avoid a perf. 
+    // impact. 
+#if !defined(NDEBUG) 
+    // open() must be restricted. 
+    syscall_ret = open("/etc/passwd", O_RDONLY); 
+    CHECK_EQ(-1, syscall_ret); 
+    CHECK_EQ(SandboxBPFBasePolicy::GetFSDeniedErrno(), errno); 
+ 
+    // We should never allow the creation of netlink sockets. 
+    syscall_ret = socket(AF_NETLINK, SOCK_DGRAM, 0);  
+    CHECK_EQ(-1, syscall_ret); 
+    CHECK_EQ(EPERM, errno); 
+#endif  // !defined(NDEBUG) 
+  } 
+} 
