@@ -144,7 +144,8 @@ void RunSandboxSanityChecks(const std::string& process_type) {
 } 
 ```
 
-## Sandboxing Policy of the GPU process
+## Evaluating system calls for the GPU process
+Evaluating system calls whether the system call is allowed or not by sansboxing of the GPU process.
 
 ```
 (gdb) bt
@@ -168,7 +169,7 @@ void RunSandboxSanityChecks(const std::string& process_type) {
 #15 main (argc=12, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
 
 ```
-More kernel apis were added.
+More system calls used by oz-wl were added, but just return Allow() for all system calls.
 
 ```c++
 // Main policy for x86_64/i386. Extended by CrosArmGpuProcessPolicy.
