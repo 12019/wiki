@@ -111,6 +111,7 @@ bool LinuxSandbox::InitializeSandboxImpl() {
 ```
 
 ### Here is the crash point
+```c++
 // If a BPF policy is engaged for |process_type|, run a few sanity checks. 
 void RunSandboxSanityChecks(const std::string& process_type) { 
   if (process_type == switches::kRendererProcess || 
@@ -139,3 +140,4 @@ void RunSandboxSanityChecks(const std::string& process_type) {
 #endif  // !defined(NDEBUG) 
   } 
 } 
+```
