@@ -151,8 +151,12 @@ More kernel apis were added.
 ```c++
 // Main policy for x86_64/i386. Extended by CrosArmGpuProcessPolicy.
 ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
+   return Allow();
   switch (sysno) {
     case __NR_ioctl:
+      return Allow();
+    case __NR_mincore:
+        return Allow();
 #if defined(__i386__) || defined(__x86_64__) || defined(__mips__)
     // The Nvidia driver uses flags not in the baseline policy
     // (MAP_LOCKED | MAP_EXECUTABLE | MAP_32BIT)
@@ -166,46 +170,68 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_sched_getaffinity:
     case __NR_sched_setaffinity:
     case __NR_setpriority:
+    case __NR_arch_prctl:
+    case __NR_brk:
+    case __NR_clone:
+    case __NR_close:
+    case __NR_connect:
+    case __NR_dup:
     case __NR_epoll_create:
-    case __NR_epoll_pwait:
-    case __NR_epoll_wait:
     case __NR_epoll_ctl:
+//    case __NR_epoll_pwait:
+    case __NR_epoll_wait:
+    case __NR_eventfd2:
+    case __NR_execve:
+    case __NR_fadvise64:
+    case __NR_fchmod:
+    case __NR_fchown:
     case __NR_fcntl:
+    case __NR_fstat:
+    case __NR_fstatfs:
+    case __NR_ftruncate:
     case __NR_futex:
     case __NR_getdents:
     case __NR_getegid:
     case __NR_geteuid:
+    case __NR_getgid:
     case __NR_getrlimit:
     case __NR_gettid:
+    case __NR_getuid:
     case __NR_inotify_add_watch:
     case __NR_inotify_init:
     case __NR_lseek:
     case __NR_lstat:
     case __NR_madvise:
     case __NR_mkdir:
-    //case __NR_munmap:
-    //case __NR_manosleep:
+    case __NR_munmap:
+//    case __NR_manosleep:
+    case __NR_pipe:
+    case __NR_pipe2:
+    case __NR_poll:
+    case __NR_read:
     case __NR_readlink:
     case __NR_recvmsg:
     case __NR_rt_sigaction:
     case __NR_rt_sigprocmask:
     case __NR_sendmsg:
     case __NR_sendto:
+
     case __NR_set_robust_list:
     case __NR_set_tid_address:
     case __NR_setsockopt:
     case __NR_shutdown:
+    case __NR_socket:
+//    case __NR_socketpari:
+    case __NR_stat:
+    case __NR_statfs:
+//    case __NR_unmask:
+    case __NR_uname:
+    case __NR_unlink:
+    case __NR_write:
       return Allow();
     case __NR_access:
     case __NR_open:
-    case __NR_read:
-    case __NR_close:
-    case __NR_clone:
-    case __NR_connect:
-    case __NR_dup:
-    case __NR_arch_prctl:
-  //  case __NR_openat:
-    case __NR_fstat:
+    case __NR_openat:
       DCHECK(broker_process_);
       return Trap(GpuSIGSYS_Handler, broker_process_);
     default:
@@ -216,4 +242,5 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       return SandboxBPFBasePolicy::EvaluateSyscall(sysno);
   }
 }
+
 ```
