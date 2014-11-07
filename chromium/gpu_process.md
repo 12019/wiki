@@ -1,4 +1,27 @@
-# Running a GPU process
+# Launching a GPU process
+```
+(gdb) bt
+#0  content::BrowserChildProcessHostImpl::Launch (this=this@entry=, delegate=delegate@entry=, cmd_line=cmd_line@entry=) at ../../content/browser/browser_child_process_host_impl.cc:135
+#1  content::GpuProcessHost::LaunchGpuProcess (this=this@entry=, channel_id=...) at ../../content/browser/gpu/gpu_process_host.cc:904
+#2  content::GpuProcessHost::Init (this=this@entry=) at ../../content/browser/gpu/gpu_process_host.cc:472
+#3  content::GpuProcessHost::Get (kind=content::GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED, cause=<optimized out>) at ../../content/browser/gpu/gpu_process_host.cc:266
+#4  content::BrowserGpuChannelHostFactory::EstablishRequest::EstablishOnIO (this=) at ../../content/browser/gpu/browser_gpu_channel_host_factory.cc:108
+#5  Run (this=) at ../../base/callback.h:401
+#6  base::debug::TaskAnnotator::RunTask (this=<optimized out>, queue_function=<optimized out>, run_function="MessageLoop::RunTask", pending_task=...) at ../../base/debug/task_annotator.cc:62
+#7  base::MessageLoop::RunTask (this=this@entry=, pending_task=...) at ../../base/message_loop/message_loop.cc:447
+#8  base::MessageLoop::DeferOrRunPendingTask (this=this@entry=, pending_task=...) at ../../base/message_loop/message_loop.cc:456
+#9  base::MessageLoop::DoWork (this=) at ../../base/message_loop/message_loop.cc:565
+#10 base::MessagePumpLibevent::Run (this=, delegate=) at ../../base/message_loop/message_pump_libevent.cc:232
+#11 base::RunLoop::Run (this=) at ../../base/run_loop.cc:49
+#12 base::MessageLoop::Run (this=<optimized out>) at ../../base/message_loop/message_loop.cc:308
+#13 content::BrowserThreadImpl::IOThreadRun (this=this@entry=, message_loop=message_loop@entry=) at ../../content/browser/browser_thread_impl.cc:217
+#14 content::BrowserThreadImpl::Run (this=, message_loop=) at ../../content/browser/browser_thread_impl.cc:252
+#15 base::Thread::ThreadMain (this=) at ../../base/threading/thread.cc:228
+#16 base::(anonymous namespace)::ThreadFunc (params=<optimized out>) at ../../base/threading/platform_thread_posix.cc:80
+#17 start_thread () from /lib64/libpthread.so.0
+#18 clone () from /lib64/libc.so.6
+(gdb) 
+```
 
 ```c++
 void BrowserGpuChannelHostFactory::EstablishRequest::EstablishOnIO() {
