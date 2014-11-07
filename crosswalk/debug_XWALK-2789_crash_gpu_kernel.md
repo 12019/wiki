@@ -32,7 +32,7 @@ alice@common_box:~$
 
 ```
 
-It seems that the GPU Porcess crashes here
+It seems that the GPU Process crashes here
 ```C++
 bool LinuxSandbox::InitializeSandboxImpl() { 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess(); 
