@@ -479,3 +479,18 @@ void BrowserChildProcessHostImpl::Launch(
       this));
 }
 ```
+
+```c++
+ChildProcessLauncher::ChildProcessLauncher(
+     SandboxedProcessLauncherDelegate* delegate,
+     base::CommandLine* cmd_line,
+     int child_process_id,
+     Client* client) {
+   context_ = new Context();
+   context_->Launch(
+      delegate,
+       cmd_line,
+       child_process_id,
+       client);
+}
+``
