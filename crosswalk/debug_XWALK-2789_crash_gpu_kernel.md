@@ -1,3 +1,5 @@
+## Debugging a sandboxing problem of the GPU process 
+
 This is a note for debugging XWALK-2789.
 https://crosswalk-project.org/jira/browse/XWALK-2789
 
@@ -140,4 +142,78 @@ void RunSandboxSanityChecks(const std::string& process_type) {
 #endif  // !defined(NDEBUG) 
   } 
 } 
+```
+
+## Sandboxing Policy of the GPU process
+
+More kernel apis were added.
+
+```c++
+// Main policy for x86_64/i386. Extended by CrosArmGpuProcessPolicy.
+ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
+  switch (sysno) {
+    case __NR_ioctl:
+#if defined(__i386__) || defined(__x86_64__) || defined(__mips__)
+    // The Nvidia driver uses flags not in the baseline policy
+    // (MAP_LOCKED | MAP_EXECUTABLE | MAP_32BIT)
+    case __NR_mmap:
+#endif
+    // We also hit this on the linux_chromeos bot but don't yet know what
+    // weird flags were involved.
+    case __NR_mprotect:
+    // TODO(jln): restrict prctl.
+    case __NR_prctl:
+    case __NR_sched_getaffinity:
+    case __NR_sched_setaffinity:
+    case __NR_setpriority:
+    case __NR_epoll_create:
+    case __NR_epoll_pwait:
+    case __NR_epoll_wait:
+    case __NR_epoll_ctl:
+    case __NR_fcntl:
+    case __NR_futex:
+    case __NR_getdents:
+    case __NR_getegid:
+    case __NR_geteuid:
+    case __NR_getrlimit:
+    case __NR_gettid:
+    case __NR_inotify_add_watch:
+    case __NR_inotify_init:
+    case __NR_lseek:
+    case __NR_lstat:
+    case __NR_madvise:
+    case __NR_mkdir:
+    //case __NR_munmap:
+    //case __NR_manosleep:
+    case __NR_readlink:
+    case __NR_recvmsg:
+    case __NR_rt_sigaction:
+    case __NR_rt_sigprocmask:
+    case __NR_sendmsg:
+    case __NR_sendto:
+    case __NR_set_robust_list:
+    case __NR_set_tid_address:
+    case __NR_setsockopt:
+    case __NR_shutdown:
+      return Allow();
+    case __NR_access:
+    case __NR_open:
+    case __NR_read:
+    case __NR_close:
+    case __NR_clone:
+    case __NR_connect:
+    case __NR_dup:
+    case __NR_arch_prctl:
+  //  case __NR_openat:
+    case __NR_fstat:
+      DCHECK(broker_process_);
+      return Trap(GpuSIGSYS_Handler, broker_process_);
+    default:
+      if (SyscallSets::IsEventFd(sysno))
+        return Allow();
+
+      // Default on the baseline policy.
+      return SandboxBPFBasePolicy::EvaluateSyscall(sysno);
+  }
+}
 ```
