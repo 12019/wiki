@@ -146,6 +146,28 @@ void RunSandboxSanityChecks(const std::string& process_type) {
 
 ## Sandboxing Policy of the GPU process
 
+```
+(gdb) bt
+#0  content::GpuProcessPolicy::EvaluateSyscall (this=, sysno=0) at ../../content/common/sandbox_linux/bpf_gpu_policy_linux.cc:177
+#1  sandbox::bpf_dsl::SandboxBPFDSLPolicy::EvaluateSyscall (this=<optimized out>, sb=, sysno=<optimized out>) at ../../sandbox/linux/bpf_dsl/bpf_dsl.cc:265
+#2  sandbox::SandboxBPF::FindRanges (this=this@entry=, ranges=ranges@entry=) at ../../sandbox/linux/seccomp-bpf/sandbox_bpf.cc:758
+#3  sandbox::SandboxBPF::AssembleFilter (this=this@entry=, force_verification=force_verification@entry=false) at ../../sandbox/linux/seccomp-bpf/sandbox_bpf.cc:591
+#4  sandbox::SandboxBPF::InstallFilter (this=this@entry=, thread_state=thread_state@entry=sandbox::SandboxBPF::PROCESS_SINGLE_THREADED) at ../../sandbox/linux/seccomp-bpf/sandbox_bpf.cc:515
+#5  sandbox::SandboxBPF::StartSandbox (this=, thread_state=sandbox::SandboxBPF::PROCESS_SINGLE_THREADED) at ../../sandbox/linux/seccomp-bpf/sandbox_bpf.cc:478
+#6  content::(anonymous namespace)::StartSandboxWithPolicy (policy=policy@entry=) at ../../content/common/sandbox_linux/sandbox_seccomp_bpf_linux.cc:153
+#7  StartBPFSandbox (command_line=..., process_type=...) at ../../content/common/sandbox_linux/sandbox_seccomp_bpf_linux.cc:195
+#8  content::SandboxSeccompBPF::StartSandbox (process_type=...) at ../../content/common/sandbox_linux/sandbox_seccomp_bpf_linux.cc:268
+#9  content::LinuxSandbox::StartSeccompBPF (this=this@entry=, process_type=...) at ../../content/common/sandbox_linux/sandbox_linux.cc:255
+#10 content::LinuxSandbox::InitializeSandboxImpl (this=) at ../../content/common/sandbox_linux/sandbox_linux.cc:321
+#11 content::(anonymous namespace)::StartSandboxLinux (gpu_info=..., watchdog_thread=watchdog_thread@entry=warning: (Internal error: pc 0x0 in read in psymtab, but not in symtab.)
+
+, should_initialize_gl_context=<optimized out>) at ../../content/gpu/gpu_main.cc:493
+#12 content::GpuMain (parameters=...) at ../../content/gpu/gpu_main.cc:320
+#13 content::ContentMainRunnerImpl::Run (this=) at ../../content/app/content_main_runner.cc:773
+#14 content::ContentMain (params=...) at ../../content/app/content_main.cc:19
+#15 main (argc=12, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
+
+```
 More kernel apis were added.
 
 ```c++
