@@ -1,6 +1,7 @@
 This is a note for debugging XWALK-2789.
 https://crosswalk-project.org/jira/browse/XWALK-2789
 
+It is good to set "set follow-fork-mode" in gdb when breaking at void BrowserChildProcessHostImpl::Launch
 
 ```
 alice@common_box:~$ ps ajxf | grep xwalk
