@@ -94,7 +94,7 @@ bool LinuxSandbox::InitializeSandboxImpl() {
 ```
 
 ### Sandbox check in the GPU process
-``
+```
 (gdb) bt
 #0  content::GpuProcessPolicy::PreSandboxHook (this=) at ../../content/common/sandbox_linux/bpf_gpu_policy_linux.cc:275
 #1  StartBPFSandbox (command_line=..., process_type=...) at ../../content/common/sandbox_linux/sandbox_seccomp_bpf_linux.cc:194
