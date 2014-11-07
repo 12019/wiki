@@ -92,3 +92,20 @@ bool LinuxSandbox::InitializeSandboxImpl() {
     LOG(ERROR) << error_message;
     return false;
 ```
+
+### Sandbox check in the GPU process
+``
+(gdb) bt
+#0  content::GpuProcessPolicy::PreSandboxHook (this=) at ../../content/common/sandbox_linux/bpf_gpu_policy_linux.cc:275
+#1  StartBPFSandbox (command_line=..., process_type=...) at ../../content/common/sandbox_linux/sandbox_seccomp_bpf_linux.cc:194
+#2  content::SandboxSeccompBPF::StartSandbox (process_type=...) at ../../content/common/sandbox_linux/sandbox_seccomp_bpf_linux.cc:268
+#3  content::LinuxSandbox::StartSeccompBPF (this=this@entry=, process_type=...) at ../../content/common/sandbox_linux/sandbox_linux.cc:255
+#4  content::LinuxSandbox::InitializeSandboxImpl (this=) at ../../content/common/sandbox_linux/sandbox_linux.cc:321
+#5  content::(anonymous namespace)::StartSandboxLinux (gpu_info=..., watchdog_thread=watchdog_thread@entry=warning: (Internal error: pc 0x0 in read in psymtab, but not in symtab.)
+
+, should_initialize_gl_context=<optimized out>) at ../../content/gpu/gpu_main.cc:493
+#6  content::GpuMain (parameters=...) at ../../content/gpu/gpu_main.cc:320
+#7  content::ContentMainRunnerImpl::Run (this=) at ../../content/app/content_main_runner.cc:773
+#8  content::ContentMain (params=...) at ../../content/app/content_main.cc:19
+#9  main (argc=12, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
+```
