@@ -285,6 +285,7 @@ GpuProcessHost* GpuProcessHost::Get(GpuProcessKind kind,
                             CAUSE_FOR_GPU_LAUNCH_MAX_ENUM);
  
   GpuProcessHost* host = new GpuProcessHost(host_id, kind);
+  // Go to GpuProcessHost::Init
   if (host->Init())
     return host;
  
@@ -316,6 +317,7 @@ bool GpuProcessHost::Init() {
     in_process_gpu_thread_->Start();
  
     OnProcessLaunched();  // Fake a callback that the process is ready.
+  // Go to GpuProcessHost::LaunchGpuProcess
   } else if (!LaunchGpuProcess(channel_id)) {
     return false;
   }
@@ -324,5 +326,133 @@ bool GpuProcessHost::Init() {
     return false;
  
   return true;
+}
+```
+
+```c++
+bool GpuProcessHost::LaunchGpuProcess(const std::string& channel_id) {
+  if (!(gpu_enabled_ &&
+      GpuDataManagerImpl::GetInstance()->ShouldUseSwiftShader()) &&
+      !hardware_gpu_enabled_) {
+    SendOutstandingReplies();
+    return false;
+  }
+ 
+  const base::CommandLine& browser_command_line =
+      *base::CommandLine::ForCurrentProcess();
+ 
+  base::CommandLine::StringType gpu_launcher =
+      browser_command_line.GetSwitchValueNative(switches::kGpuLauncher);
+ 
+#if defined(OS_LINUX)
+  int child_flags = gpu_launcher.empty() ? ChildProcessHost::CHILD_ALLOW_SELF :
+                                           ChildProcessHost::CHILD_NORMAL;
+#else
+  int child_flags = ChildProcessHost::CHILD_NORMAL;
+#endif
+ 
+  base::FilePath exe_path = ChildProcessHost::GetChildPath(child_flags);
+  if (exe_path.empty())
+    return false;
+ 
+  base::CommandLine* cmd_line = new base::CommandLine(exe_path);
+  cmd_line->AppendSwitchASCII(switches::kProcessType, switches::kGpuProcess);
+  cmd_line->AppendSwitchASCII(switches::kProcessChannelID, channel_id);
+ 
+  if (kind_ == GPU_PROCESS_KIND_UNSANDBOXED)
+    cmd_line->AppendSwitch(switches::kDisableGpuSandbox);
+ 
+  // Propagate relevant command line switches.
+  static const char* const kSwitchNames[] = {
+    switches::kDisableAcceleratedVideoDecode,
+    switches::kDisableBreakpad,
+    switches::kDisableGpuSandbox,
+    switches::kDisableGpuWatchdog,
+    switches::kDisableLogging,
+    switches::kDisableSeccompFilterSandbox,
+#if defined(ENABLE_WEBRTC)
+    switches::kDisableWebRtcHWEncoding,
+#endif
+    switches::kEnableLogging,
+    switches::kEnableShareGroupAsyncTextureUpload,
+#if defined(OS_CHROMEOS)
+    switches::kDisableVaapiAcceleratedVideoEncode,
+#endif
+    switches::kGpuStartupDialog,
+    ...
+    
+    #endif
+#if defined(USE_X11) && !defined(OS_CHROMEOS)
+    switches::kX11Display,
+#endif
+  };
+  cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
+                             arraysize(kSwitchNames));
+  cmd_line->CopySwitchesFrom(
+      browser_command_line, switches::kGpuSwitches, switches::kNumGpuSwitches);
+  cmd_line->CopySwitchesFrom(
+      browser_command_line, switches::kGLSwitchesCopiedFromGpuProcessHost,
+      switches::kGLSwitchesCopiedFromGpuProcessHostNumSwitches);
+ 
+  GetContentClient()->browser()->AppendExtraCommandLineSwitches(
+      cmd_line, process_->GetData().id);
+ 
+  GpuDataManagerImpl::GetInstance()->AppendGpuCommandLine(cmd_line);
+ 
+  if (cmd_line->HasSwitch(switches::kUseGL)) {
+    swiftshader_rendering_ =
+        (cmd_line->GetSwitchValueASCII(switches::kUseGL) == "swiftshader");
+  }
+ 
+  UMA_HISTOGRAM_BOOLEAN("GPU.GPU.GPUProcessSoftwareRendering",
+                        swiftshader_rendering_);
+ 
+  // If specified, prepend a launcher program to the command line.
+  if (!gpu_launcher.empty())
+    cmd_line->PrependWrapper(gpu_launcher);
+ 
+  process_->Launch(
+      new GpuSandboxedProcessLauncherDelegate(cmd_line,
+                                              process_->GetHost()),
+      cmd_line);
+  // 
+  // Check this!!!
+  //
+  process_launched_ = true;
+ 
+  UMA_HISTOGRAM_ENUMERATION("GPU.GPUProcessLifetimeEvents",
+                            LAUNCHED, GPU_PROCESS_LIFETIME_EVENT_MAX);
+  return true;
+}
+```
+
+```c++
+void BrowserChildProcessHostImpl::Launch(
+    SandboxedProcessLauncherDelegate* delegate,
+    base::CommandLine* cmd_line) {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
+ 
+  GetContentClient()->browser()->AppendExtraCommandLineSwitches(
+      cmd_line, data_.id);
+ 
+  const base::CommandLine& browser_command_line =
+      *base::CommandLine::ForCurrentProcess();
+  static const char* kForwardSwitches[] = {
+    switches::kDisableLogging,
+    switches::kEnableLogging,
+    switches::kIPCConnectionTimeout,
+    switches::kLoggingLevel,
+    switches::kTraceToConsole,
+    switches::kV,
+    switches::kVModule,
+  };
+  cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches,
+                             arraysize(kForwardSwitches));
+ 
+  child_process_.reset(new ChildProcessLauncher(
+      delegate,
+      cmd_line,
+      data_.id,
+      this));
 }
 ```
