@@ -1,6 +1,6 @@
 # Chromium
 * http://peter.sh/experiments/chromium-command-line-switches/
-* 
+
 ## GPU
 * http://www.chromium.org/developers/how-tos/debugging-gpu-related-code
 
@@ -11,3 +11,6 @@
 ## Links
 * https://github.com/ds-hwang/wiki/wiki
 * 
+
+## Presentations
+* [Mobile Browser Internals and Trends] (http://deview.kr/2013/detail.nhn?topicSeq=5)
