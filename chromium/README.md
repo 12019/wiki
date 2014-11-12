@@ -1,5 +1,6 @@
 # Chromium
-
+* http://peter.sh/experiments/chromium-command-line-switches/
+* 
 ## GPU
 * http://www.chromium.org/developers/how-tos/debugging-gpu-related-code
 
