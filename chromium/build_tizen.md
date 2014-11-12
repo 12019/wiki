@@ -1,4 +1,4 @@
-## Build & Creat rpm packages
+## Build & Create rpm packages
 
 For Tizen Common
     $ gbs build -A x86_64 --packaging-dir packaging/rpm --profile profile.tizen.common.3.0 --include-all
