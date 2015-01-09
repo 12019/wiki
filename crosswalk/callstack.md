@@ -1,3 +1,25 @@
+### Launch
+```
+#0  xwalk::application::ApplicationSystemTizen::LaunchFromCommandLine (this=, cmd_line=..., url=...) at ../../xwalk/application/browser/application_system_tizen.cc:100
+#1  xwalk::XWalkBrowserMainParts::PreMainMessageLoopRun (this=this@entry=) at ../../xwalk/runtime/browser/xwalk_browser_main_parts.cc:221
+#2  xwalk::XWalkBrowserMainPartsTizen::PreMainMessageLoopRun (this=) at ../../xwalk/runtime/browser/xwalk_browser_main_parts_tizen.cc:61
+#3  content::BrowserMainLoop::PreMainMessageLoopRun (this=) at ../../content/browser/browser_main_loop.cc:743
+#4  Run (object=, this=<synthetic pointer>) at ../../base/bind_internal.h:134
+#5  MakeItSo (a1=, runnable=...) at ../../base/bind_internal.h:863
+#6  base::internal::Invoker<1, base::internal::BindState<base::internal::RunnableAdapter<int (content::BrowserMainLoop::*)()>, int (content::BrowserMainLoop*), void (base::internal::Unretain
+edWrapper<content::BrowserMainLoop>)>, int (content::BrowserMainLoop*)>::Run(base::internal::BindStateBase*) (base=) at ../../base/bind_internal.h:1169
+#7  Run (this=) at ../../base/callback.h:401
+#8  content::StartupTaskRunner::RunAllTasksNow (this=) at ../../content/browser/startup_task_runner.cc:45
+#9  content::BrowserMainLoop::CreateStartupTasks (this=) at ../../content/browser/browser_main_loop.cc:641
+#10 content::BrowserMainRunnerImpl::Initialize (this=, parameters=...) at ../../content/browser/browser_main_runner.cc:230
+#11 content::BrowserMain (parameters=...) at ../../content/browser/browser_main.cc:22
+#12 content::RunNamedProcessTypeMain (process_type=..., main_function_params=..., delegate=) at ../../content/app/content_main_runner.cc:423
+#13 content::ContentMainRunnerImpl::Run (this=) at ../../content/app/content_main_runner.cc:798
+#14 content::ContentMain (params=...) at ../../content/app/content_main.cc:19
+#15 main (argc=2, argv=) at ../../xwalk/runtime/app/xwalk_main.cc:40
+```
+
+
 ### CreateWindowTreeHost
 
 ```
