@@ -10,7 +10,7 @@
 
 ## Links
 * https://github.com/ds-hwang/wiki/wiki
-* 
+* http://luxtella.blogspot.com/
 
 ## Presentations
 * [Mobile Browser Internals and Trends] (http://deview.kr/2013/detail.nhn?topicSeq=5)
