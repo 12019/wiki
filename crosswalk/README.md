@@ -18,7 +18,7 @@ $ adb install -r out/Release/apks/XWalkRuntimeLib.apk
 $ adb install -r out/Release/apks/XWalkRuntimeClientShell.apk
 
 ```
-Running a xwalk view (without loading a page)
+Running a MinBrowser (without loading a page)
 ```
 $ adb shell am start -n org.xwalk.runtime.client.shell/org.xwalk.runtime.client.shell.XWalkRuntimeClientShellActivity
 ```
