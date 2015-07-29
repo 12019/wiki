@@ -14,7 +14,12 @@ $ export GYP_GENERATORS='ninja'
 $ python xwalk/gyp_xwalk
 $ ninja -C out/Release xwalk_core_shell_apk xwalk_runtime_client_shell_apk
 $ ninja -C out/Release xwalk_runtime_lib_apk
+$ adb install -r out/Release/apks/XWalkRuntimeLib.apk
+$ adb install -r out/Release/apks/XWalkRuntimeClientShell.apk
+$ adb shell am start -n org.xwalk.runtime.client.shell/org.xwalk.runtime.client.shell.XWalkRuntimeClientShellActivity
 ```
+#### Tips
+$ adb devices -l
 
 
 # References
