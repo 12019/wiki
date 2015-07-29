@@ -16,12 +16,16 @@ $ ninja -C out/Release xwalk_core_shell_apk xwalk_runtime_client_shell_apk
 $ ninja -C out/Release xwalk_runtime_lib_apk
 $ adb install -r out/Release/apks/XWalkRuntimeLib.apk
 $ adb install -r out/Release/apks/XWalkRuntimeClientShell.apk
+
+```
+Running a xwalk view (without loading a page)
 $ adb shell am start -n org.xwalk.runtime.client.shell/org.xwalk.runtime.client.shell.XWalkRuntimeClientShellActivity
 ```
 #### Tips
+```
 $ adb devices -l
 $ adb logcat
-
+```
 # References
 * https://crosswalk-project.org/contribute/building_crosswalk.html
 * https://github.com/crosswalk-project/crosswalk-website/wiki/Android-debugging
