@@ -20,7 +20,8 @@ $ adb shell am start -n org.xwalk.runtime.client.shell/org.xwalk.runtime.client.
 ```
 #### Tips
 $ adb devices -l
-
+$ adb logcat
 
 # References
 * https://crosswalk-project.org/contribute/building_crosswalk.html
+* https://github.com/crosswalk-project/crosswalk-website/wiki/Android-debugging
