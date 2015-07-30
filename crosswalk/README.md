@@ -29,6 +29,7 @@ https://crosswalk-project.org/documentation/android/android_target_setup.html
 ```
 $ adb devices -l
 $ adb logcat
+$ adb push anand.jpg /data/local
 ```
 # References
 * https://crosswalk-project.org/contribute/building_crosswalk.html
