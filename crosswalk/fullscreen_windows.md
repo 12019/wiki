@@ -9,6 +9,7 @@ void BrowserView::SetMetroSnapMode(bool enable) {
 ```
 
 # Stack Trace
+```
   base::debug::StackTrace::StackTrace [0x012B49F7+23] (c:\git\crosswalk\src\base\debug\stack_trace_win.cc:214)
 	views::FullscreenHandler::SetFullscreenImpl [0x02B7B3FC+44] (c:\git\crosswalk\src\ui\views\win\fullscreen_handler.cc:53)
 	views::FullscreenHandler::SetFullscreen [0x02B7B3C3+19] (c:\git\crosswalk\src\ui\views\win\fullscreen_handler.cc:32)
@@ -36,3 +37,4 @@ void BrowserView::SetMetroSnapMode(bool enable) {
 	BaseThreadInitThunk [0x74E97C04+36]
 	RtlInitializeExceptionChain [0x776CAD5F+143]
 	RtlInitializeExceptionChain [0x776CAD2A+90]
+```
