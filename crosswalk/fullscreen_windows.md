@@ -1,3 +1,9 @@
+# Run Crosswalk in Windows
+
+```
+ c:\git\crosswalk\src\out\Release\xwalk.exe manifest.json  >out.txt 2>err.txt
+```
+
 # Enable Metro UI in Chromium
 ```
 #if defined(OS_WIN)
