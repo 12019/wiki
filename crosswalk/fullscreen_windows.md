@@ -67,6 +67,37 @@ It looks like the window style is overrided in other methods.
 }
 ```
 
+# Create a Window
+```
+WindowImpl::Init(HWND parent, const Rect& bounds)
+HWDMessageHandler::Init
+DesktopWindowTreeHostWin::Init
+void DesktopNativeWidgetAura::InitNativeWidget
+```
+
+# Configuring the window style
+DesktopWindowTreeHostWin::Init -> ConfigureWindowStyles
+
+```
+void ConfigureWindowStyles(
+    HWNDMessageHandler* handler,
+    const Widget::InitParams& params,
+    WidgetDelegate* widget_delegate,
+    internal::NativeWidgetDelegate* native_widget_delegate) {
+  // Configure the HWNDMessageHandler with the appropriate
+  DWORD style = 0;
+  DWORD ex_style = 0;
+  DWORD class_style = 0;
+  CalculateWindowStylesFromInitParams(params, widget_delegate,
+                                      native_widget_delegate, &style, &ex_style,
+                                      &class_style);
+  handler->set_initial_class_style(class_style);
+  handler->set_window_style(handler->window_style() | style);
+  handler->set_window_ex_style(handler->window_ex_style() | ex_style);
+}
+```
+ui/views/widget/widget_hwnd_utils.cc
+
 # Enable Metro UI in Chromium
 ```
 #if defined(OS_WIN)
