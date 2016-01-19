@@ -1,12 +1,13 @@
 # Enable Metro UI in Chromium
-
+```
 #if defined(OS_WIN)
 void BrowserView::SetMetroSnapMode(bool enable) {
   LOCAL_HISTOGRAM_COUNTS("Metro.SnapModeToggle", enable);
   ProcessFullscreen(enable, METRO_SNAP_FULLSCREEN, GURL(),
                     EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE);
 }
-  
+```
+
 # Stack Trace
   base::debug::StackTrace::StackTrace [0x012B49F7+23] (c:\git\crosswalk\src\base\debug\stack_trace_win.cc:214)
 	views::FullscreenHandler::SetFullscreenImpl [0x02B7B3FC+44] (c:\git\crosswalk\src\ui\views\win\fullscreen_handler.cc:53)
