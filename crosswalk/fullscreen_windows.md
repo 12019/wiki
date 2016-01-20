@@ -138,3 +138,44 @@ BaseThreadInitThunk [0x74E97C04+36]
 RtlInitializeExceptionChain [0x776CAD5F+143]
 RtlInitializeExceptionChain [0x776CAD2A+90]
 ```
+
+
+```
+bool Application::Launch() {
+...
+  runtime->set_ui_delegate(RuntimeUIDelegate::Create(runtime, params));
+  runtime->Show();
+...
+}
+```
+↓
+```
+RuntimeUIDelegate* RuntimeUIDelegate::Create(
+    Runtime* runtime,
+    const NativeAppWindow::CreateParams& params) {
+#if defined(OS_WIN) || defined(OS_LINUX)
+  return new RuntimeUIDelegateDesktop(runtime, params);
+#else
+  return new DefaultRuntimeUIDelegate(runtime, params);
+#endif
+}
+```
+↓
+```
+RuntimeUIDelegateDesktop::RuntimeUIDelegateDesktop(
+    Runtime* runtime, const NativeAppWindow::CreateParams& params)
+  : DefaultRuntimeUIDelegate(runtime, params) {
+}
+
+```
+↓
+
+```
+DefaultRuntimeUIDelegate::DefaultRuntimeUIDelegate(
+    Runtime* runtime, const NativeAppWindow::CreateParams& params)
+  : runtime_(runtime),
+    window_(nullptr),
+    window_params_(params) {
+  DCHECK(runtime_);
+}
+```
