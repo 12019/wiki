@@ -3,6 +3,9 @@
 ```
  c:\git\crosswalk\src\out\Release\xwalk.exe manifest.json  >out.txt 2>err.txt
 ```
+# win32 api
+
+
 
 # Set fullscreen
 ```    
