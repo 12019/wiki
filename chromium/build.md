@@ -1,3 +1,5 @@
+You can find the original document at  [here](https://github.com/crosswalk-project/chromium-crosswalk/wiki/Building-Chromium).
+
 This is a cheat sheet for building Chromium so you should read the full instructions at the link in each section.
 
 ## Install deptools
