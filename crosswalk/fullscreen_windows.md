@@ -141,7 +141,7 @@ BaseThreadInitThunk [0x74E97C04+36]
 RtlInitializeExceptionChain [0x776CAD5F+143]
 RtlInitializeExceptionChain [0x776CAD2A+90]
 ```
-# ShowWindowWithState
+## ShowWindowWithState
 ```
 base::debug::StackTrace::StackTrace [0x012B49F7+23] (c:\git\crosswalk\src\base\debug\stack_trace_win.cc:214)
 views::HWNDMessageHandler::ShowWindowWithState [0x02B6F548+216] (c:\git\crosswalk\src\ui\views\win\hwnd_message_handler.cc:592)
