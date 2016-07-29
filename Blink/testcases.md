@@ -1,3 +1,110 @@
+## editing/deleting/backspace-merge-into-list-item.html
+```
+commit bb59e5b729913a2023ea70e50d0689626565dd7e
+Author: joone.hur <joone.hur@intel.com>
+Date:   Wed Jun 22 20:56:12 2016 -0700
+
+    Remove style spans to follow the styles of list item
+    
+    This CL removes style spans to follow the styles of list item when
+    the text of the pasted or merged element becomes a list item.
+    
+    BUG=335955
+    TEST=editing/deleting/backspace-merge-into-list-item.html
+    
+    Review-Url: https://codereview.chromium.org/2072093002
+    Cr-Commit-Position: refs/heads/master@{#401533}
+```
+```javascript
+<!doctype HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#editable p { 
+  font-size: 20px;
+  line-height: 22px;
+  color: red;
+}
+</style>
+<div contenteditable="true" id="editable">
+  <ul>
+    <li>list item 1</li>
+    <li>list item 2</li>
+    <li>list item 3</li>
+  </ul>
+  <p>Paragraph</p>
+</div>
+<script>
+test(function() {
+  var editor = document.getElementById('editable');
+  var range = document.createRange();
+  var selection = window.getSelection();
+  range.setStart(editor.childNodes[2], 0);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  editor.focus();
+  document.execCommand('delete');
+
+  var htmlPara = document.getElementsByTagName('li')[2].outerHTML;
+  assert_equals(htmlPara, '<li>list item 3Paragraph</li>');
+}, 'make a paragraph into a list by backspace');
+</script>
+```
+
+## editing/deleting/backspace-merge-two-paragraphs.html
+```
+commit 8e411d16171d27612776a2f05356b0ed9f06b848
+Author: joone.hur <joone.hur@intel.com>
+Date:   Sun Jun 12 23:55:43 2016 -0700
+
+    Don't need to preserve CSS line-height property during editing operation
+    
+    When we merge two paragraphs by typing backspace key at the head
+    of the second paragraph, the styles of the second paragraph can be
+    preserved by using <span> tag. However, we don't need to preserve
+    line-height style because the computed value can be different from
+    the value defined in HTML.
+    
+    BUG=226941
+    TEST=editing/deleting/backspace-merge-two-paragraphs.html
+    
+    Review-Url: https://codereview.chromium.org/2064473002
+    Cr-Commit-Position: refs/heads/master@{#399410}
+```
+```javascript
+<!doctype HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+div {
+  border: 1px solid gray;
+  padding: 10px;
+  line-height: 1.44;
+}
+</style>
+<div contenteditable="true" id="editable">
+  <p>This is the first paragraph.</p>
+  <p>This is the second.</p>
+</div>
+<script>
+test(function() {
+  var editor = document.getElementById('editable');
+  var range = document.createRange();
+  var selection = window.getSelection();
+  range.setStart(editor.childNodes[2], 0);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  editor.focus();
+  document.execCommand('delete', null, false);
+
+  var html_para = document.getElementsByTagName('p')[0].outerHTML;
+  assert_equals(html_para, '<p>This is the first paragraph.This is the second.</p>');
+}, 'merge two paragraphs by backspace');
+</script>
+```
+
 ## editing/execCommand/queryCommandState-04.html
 ```
 commit dfe3d34820670521568ca7dfe681f701da94325b
@@ -21,8 +128,7 @@ Date:   Mon May 30 17:48:24 2016 -0700
     Review-Url: https://codereview.chromium.org/1986563002
     Cr-Commit-Position: refs/heads/master@{#396763}
 ```
-
-```
+```javascript
 <!doctype HTML>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
@@ -79,7 +185,7 @@ Date:   Tue May 10 21:54:09 2016 -0700
     Review-Url: https://codereview.chromium.org/1960553002
     Cr-Commit-Position: refs/heads/master@{#392855}
 ```
-```
+```javascript
 <!doctype HTML>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
