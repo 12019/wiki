@@ -1,3 +1,42 @@
+# editing/pasteboard/cut-paste-formatting-tag.html
+
+```
+commit f77d0eaedb2787483c147b973bcf7e7de82bf0f3
+Author: joone.hur <joone.hur@intel.com>
+Date:   Fri Aug 12 23:47:05 2016 -0700
+
+    Keep formatting tags included when it is cut or copied.
+
+    When we copy/cut a formatting tag without the highest node.
+    the formatting tag's text can be wrapped by <span> tag
+    instead of the formatting tag. This CL allows to keep
+    formatting tags included when it is cut or copied.
+
+    BUG=634482
+    TEST=editing/pasteboard/cut-paste-formatting-tag.html
+
+    Review-Url: https://codereview.chromium.org/2229703004
+    Cr-Commit-Position: refs/heads/master@{#411883}
+```
+```javascript
+<!doctype HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+
+test(() => assert_selection(
+  '<div contenteditable style="width: 300px; height: 250px; border: 1px solid black"><div><b>^<br></b></div><b>foo|</b></div>',
+  selection => {
+    selection.document.execCommand('cut');
+    selection.document.execCommand('paste');
+  },
+  '<div contenteditable style="width: 300px; height: 250px; border: 1px solid black"><br><div><b>foo|</b></div></div>'),
+  'Cut all tags and paste them');
+
+</script>
+
+```
 ## editing/inserting/insert-space.html
 ```
 commit 4dab74137593abb0888e415294aeb80da27362e3
