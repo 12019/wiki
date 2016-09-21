@@ -38,5 +38,10 @@ for (int i = 0; i < kNumTransactions; ++i) {
 }
 ```
 
+```
+std::unique_ptr<RenderPass> RenderPass::Create() {
+  return base::WrapUnique(new RenderPass());
+}
+```
 ### References
 * http://www.drdobbs.com/cpp/c11-uniqueptr/240002708
