@@ -4,6 +4,7 @@
 
 ## GPU
 * http://www.chromium.org/developers/how-tos/debugging-gpu-related-code
+* https://chromium.googlesource.com/chromium/src/+/master/components/tracing/docs/memory_infra_gpu.md
 
 ## Ozone
 * http://www.chromium.org/developers/design-documents/ozone
