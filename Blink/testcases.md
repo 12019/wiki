@@ -1,3 +1,93 @@
+# editing/inserting/insert-space.html
+
+commit f9400ff295d15df932a5ffc903e4ab42163b1b4d
+Author: joone.hur <joone.hur@intel.com>
+Date:   Sun Oct 30 19:31:54 2016 -0700
+
+    Add a test case for bug 659109
+    
+    <div contenteditable="true"><br> </div>
+    
+    When we run the above example with M54/55, mutiple
+    spaces can't be added under <div> because two plain
+    spaces are collapsed into one space while typing.
+    
+    This is a regression caused by https://codereview.chromium.org/2175163004.
+    It was fixed in M56: https://codereview.chromium.org/2432083003.
+    
+    This test case is added to reproduce the problem mentioned in the bug report.
+    
+    BUG=659109
+    TEST=editing/inserting/insert-space.html
+    
+    Review-Url: https://codereview.chromium.org/2451423003
+    Cr-Commit-Position: refs/heads/master@{#428639}
+
+
+```
+<!doctype HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+test(() => assert_selection(
+  '<div contenteditable><p>A|B</p></div>',
+  'insertText \ ',
+  '<div contenteditable><p>A |B</p></div>'),
+  'insert a plain space in the middle of text node');
+
+test(() => assert_selection(
+  '<div contenteditable><p id="para"></p></div>',
+  selection => {
+    var para = selection.document.getElementById('para');
+    para.appendChild(selection.document.createTextNode('A'));
+    para.appendChild(selection.document.createTextNode('B'));
+    selection.collapse(para.firstChild, 1);
+
+    selection.document.execCommand('insertText', false, ' ');
+  },
+  '<div contenteditable><p id="para">A |B</p></div>'),
+  'insert a plain space between two inserted text nodes');
+
+test(() => assert_selection(
+  '<div contenteditable><p id="para"></p></div>',
+  selection => {
+    var para = selection.document.getElementById('para');
+    para.appendChild(selection.document.createTextNode('A'));
+    para.appendChild(selection.document.createTextNode(''));
+    selection.collapse(para.firstChild, 1);
+
+    selection.document.execCommand('insertText', false, ' ');
+  },
+  '<div contenteditable><p id="para">A\u00A0|</p></div>'),
+  'Insert a &nbsp; instead of plain space when it is inserted before the empty text node');
+
+test(() => assert_selection(
+  '<div contenteditable><p id="para"></p></div>',
+  selection => {
+    var para = selection.document.getElementById('para');
+    para.appendChild(selection.document.createTextNode('A'));
+    para.appendChild(selection.document.createTextNode(' B'));
+    selection.collapse(para.firstChild, 1);
+
+    selection.document.execCommand('insertText', false, ' ');
+  },
+  '<div contenteditable><p id="para">A\u00A0| B</p></div>'),
+  'Insert a &nbsp; instead of plain space when it is inserted before the text node that has a leading plain space');
+
+test(() => assert_selection(
+  '<div contenteditable>|<br> </div>',
+  selection => {
+    selection.document.execCommand('insertText', false, ' ');
+    selection.document.execCommand('insertText', false, ' ');
+    selection.document.execCommand('insertText', false, ' ');
+  },
+  '<div contenteditable>\u00A0 \u00A0| </div>'),
+  'Insert spaces into the editable <div> that only has <br> and space as child');
+</script>
+```
+
+
 # editing/pasteboard/cut-paste-formatting-tag.html
 
 ```
