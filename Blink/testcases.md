@@ -1,3 +1,90 @@
+# editing/pasteboard/restore-collapsed-space-for-copy.html
+```
+commit 131df048e7e445a03706078367285112e6b3467d
+Author: joone.hur <joone.hur@intel.com>
+Date:   Wed Sep 14 07:33:08 2016 -0700
+
+    Restore a collapsed leading space of text used for line break
+    
+    When a text is wrapped during layout, the leading space of the
+    text can be collapsed and a line break is inserted instead of
+    the space. In this case, we need to restore the collapsed space
+    when we copy the text.
+    
+    This CL handles the case that the below CL didn't cover:
+    https://codereview.chromium.org/2320533002/
+    
+    In addition, while iterating through the DOM range, the below
+    case with the TextIteratorBehavior flag don't need to restore
+    the leading space.
+    
+    * Running DumpRenderTree : TextIteratorForInnerText
+    * Searching text : TextIteratorDoesNotBreakAtReplacedElement
+    * Getting a plain text for copy & paste: TextIteratorEmitsImageAltText
+    
+    BUG=318925
+    TEST=editing/pasteboard/restore-collapsed-space-for-copy.html
+    
+    Review-Url: https://codereview.chromium.org/2325553002
+    Cr-Commit-Position: refs/heads/master@{#418557}
+```
+```
+<!doctype HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+test(() => assert_selection(
+  '<div style="width: 10em;">Copy this area <a href="http://foo/">AVeryLongWordThatWillWrap</a></div><div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData('Copy this area <a href="http://foo/">AVeryLongWordThatWillWrap</a>');
+    selection.document.execCommand('paste');
+  },
+  '<div style="width: 10em;">Copy this area <a href="http://foo/">AVeryLongWordThatWillWrap</a></div><div contenteditable>Copy this area <a href="http://foo/">AVeryLongWordThatWillWrap|</a></div>'),
+  '1. Restore the collapsed trailing space');
+
+test(() => assert_selection(
+  '<div style="width: 2em;"><b><i>foo </i></b>bar</div><div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData('<b><i>foo </i></b>bar');
+    selection.document.execCommand('paste');
+  },
+ '<div style="width: 2em;"><b><i>foo </i></b>bar</div><div contenteditable><b><i>foo </i></b>bar|</div>'),
+  '2. Restore the collapsed trailing space');
+
+test(() => assert_selection(
+  '<div style="width: 2em;"><b><i>foo</i></b> bar</div><div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData('<b><i>foo</i></b> bar');
+    selection.document.execCommand('paste');
+  },
+  '<div style="width: 2em;"><b><i>foo</i></b> bar</div><div contenteditable><b><i>foo</i></b> bar|</div>'),
+  '3. Restore the collapsed leading space');
+
+test(() => assert_selection(
+  '<div style="width: 2em;">작은홍띠점박이푸른부전나비</div><div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData('작은홍띠점박이푸른부전나비');
+    selection.document.execCommand('paste');
+  },
+ '<div style="width: 2em;">작은홍띠점박이푸른부전나비</div><div contenteditable>작은홍띠점박이푸른부전나비|</div>'),
+  '4. Space should not be added for CJK');
+
+test(() => assert_selection(
+  '<div style="width: 2em; word-break: break-all">Pneumonoultramicroscopicsilicovolcanoconiosis</div><div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData('Pneumonoultramicroscopicsilicovolcanoconiosis');
+    selection.document.execCommand('paste');
+  },
+ '<div style="width: 2em; word-break: break-all">Pneumonoultramicroscopicsilicovolcanoconiosis</div><div contenteditable>Pneumonoultramicroscopicsilicovolcanoconiosis|</div>'),
+  '5. Space should not be added for CSS word-break: break-all');
+</script>
+```
+
+
+
+
+
 # editing/inserting/insert-space.html
 ```
 commit f9400ff295d15df932a5ffc903e4ab42163b1b4d
