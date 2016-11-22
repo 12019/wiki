@@ -1,3 +1,40 @@
+
+```
+<html>
+<head>
+<style>
+div {
+  border: 2px solid red;
+  padding: 12px;
+  line-height: 1.66666667;
+  width: 70px;
+}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <div contenteditable id="editor">
+    The caret
+    <span id="line2"> height should be the same for each line.</span>
+  </div>
+<script>
+test(function () {
+  var editor = document.getElementById('editor');
+  editor.focus();
+
+  var caretHeight1 = window.internals.absoluteCaretBounds().height;
+  var sel = window.getSelection();
+  sel.collapse(line2, 0);
+  var caretHeight2 = window.internals.absoluteCaretBounds().height;
+
+  assert_equals(caretHeight1, caretHeight2, 'The caret height is the same for each line.');
+}, 'Compare the caret height');
+</script>
+</body>
+</html>
+```
+
 # editing/pasteboard/restore-collapsed-space-for-copy.html
 ```
 commit 131df048e7e445a03706078367285112e6b3467d
